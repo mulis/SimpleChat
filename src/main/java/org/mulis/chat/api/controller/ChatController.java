@@ -10,7 +10,7 @@ public interface ChatController<PostMessageRequest> {
 
     public Integer postMessage(PostMessageRequest request);
 
-    public Collection getMessages(Integer userId);
+    public Collection getMessages(Integer userId, Integer lastReceivedMessageId);
 
     public Collection getUsers();
 

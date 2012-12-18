@@ -72,7 +72,7 @@ Chat.Controller.prototype.login = function() {
 
     $.ajax({
         'type' : 'GET',
-        'url' : me.chat.serviceUrl + '/login?nickname=' + me.chat.user.nickname + '&color=' + me.chat.user.color,
+        'url' : me.chat.serviceUrl + '/login?nickname=' + encodeURI(me.chat.user.nickname) + '&color=' + encodeURI(me.chat.user.color),
         'contentType' : 'text/plain',
         'dataType' : 'text',
         'processData' : false
@@ -102,7 +102,7 @@ Chat.Controller.prototype.logout = function() {
 
     $.ajax({
         'type' : 'GET',
-        'url' : me.chat.serviceUrl + '/logout?userId=' + me.chat.user.userId,
+        'url' : me.chat.serviceUrl + '/logout?userId=' + encodeURI(me.chat.user.userId),
         'contentType' : 'text/plain',
         'dataType' : 'text',
         'processData' : false
@@ -162,7 +162,7 @@ Chat.Controller.prototype.getMessages = function() {
 
     $.ajax({
         'type' : 'GET',
-        'url' : me.chat.serviceUrl + '/messages?userId=' + me.chat.user.userId,
+        'url' : me.chat.serviceUrl + '/messages?userId=' + encodeURI(me.chat.user.userId) + "&lastReceivedMessageId=" + encodeURI(me.chat.user.lastReceivedMessageId),
         'contentType' : 'text/plain',
         'dataType' : 'json',
         'processData' : false
@@ -170,6 +170,7 @@ Chat.Controller.prototype.getMessages = function() {
         var result = data;
         if (result) {
             if (result.length > 0) {
+                me.chat.user.lastReceivedMessageId = result[result.length - 1].messageId;
                 me.chat.model.addNewMessages(result);
                 me.chat.messagesTimer.decreaseIntervalToMin();
             }

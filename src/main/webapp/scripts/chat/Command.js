@@ -8,15 +8,13 @@ Chat.Command = [
 
         try {
 
-            if (this.user.logged == false) {
+            if (this.user.userId == -1) {
 
-                if (arguments.length == 2) {
+                if (arguments.length == 1) {
                     this.user.nickname = arguments[0];
-                    this.user.password = arguments[1];
-                } else if (arguments.length == 3) {
+                } else if (arguments.length == 2) {
                     this.user.nickname = arguments[0];
-                    this.user.password = arguments[1];
-                    this.user.color = arguments[2];
+                    this.user.color = arguments[1];
                 } else {
                     throw("Wrong login command arguments number.");
                 }
@@ -44,7 +42,7 @@ Chat.Command = [
 
         try {
 
-            if (this.user.logged == true) {
+            if (this.user.userId > -1) {
                 this.element.trigger(this.events.LOGOUT_ATTEMPT);
             }
             else {

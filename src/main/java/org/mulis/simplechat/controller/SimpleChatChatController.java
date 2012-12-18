@@ -26,7 +26,13 @@ public class SimpleChatChatController implements ChatController<PostMessageReque
     @Override
     public Integer login(@RequestParam final String nickname, @RequestParam final String color) {
 
+        logger.debug("login");
+        logger.debug("nickname: " + nickname);
+        logger.debug("color:" + color);
+
         Integer userId = model.login(nickname, color);
+
+        logger.debug("userId:" + userId);
 
         return userId;
 
@@ -38,6 +44,9 @@ public class SimpleChatChatController implements ChatController<PostMessageReque
     @Override
     public void logout(@RequestParam final Integer userId) {
 
+        logger.debug("logout");
+        logger.debug("userId: " + userId);
+
         model.logout(userId);
 
     }
@@ -48,7 +57,12 @@ public class SimpleChatChatController implements ChatController<PostMessageReque
     @Override
     public Integer postMessage(@RequestBody final PostMessageRequestBody request) {
 
+        logger.debug("postMessage");
+        logger.debug("request: " + request);
+
         Integer messageId = model.postMessage(request.getMessage());
+
+        logger.debug("messageId: " + messageId);
 
         return messageId;
 
@@ -58,9 +72,15 @@ public class SimpleChatChatController implements ChatController<PostMessageReque
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @Override
-    public Collection<ChatPostedMessage> getMessages(@RequestParam final Integer userId) {
+    public Collection<ChatPostedMessage> getMessages(@RequestParam final Integer userId, @RequestParam final Integer lastReceivedMessageId) {
 
-        Collection<ChatPostedMessage> messages = model.getMessages(userId);
+        logger.debug("getMessages");
+        logger.debug("userId: " + userId);
+        logger.debug("lastReceivedMessageId: " + lastReceivedMessageId);
+
+        Collection<ChatPostedMessage> messages = model.getMessages(userId, lastReceivedMessageId);
+
+        logger.debug("messages: " + messages);
 
         return messages;
 
@@ -72,7 +92,11 @@ public class SimpleChatChatController implements ChatController<PostMessageReque
     @Override
     public Collection<ChatUser> getUsers() {
 
+        logger.debug("getUsers");
+
         Collection<ChatUser> users = model.getUsers();
+
+        logger.debug("users: " + users);
 
         return users;
 

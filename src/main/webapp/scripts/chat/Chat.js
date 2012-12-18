@@ -57,6 +57,7 @@ Chat.User = function() {
     this.userId = -1;
     this.nickname = "";
     this.color = "";
+    this.lastReceivedMessageId = -1;
 
 }
 

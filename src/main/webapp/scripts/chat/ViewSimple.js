@@ -66,14 +66,19 @@ Chat.View.prototype.initControls = function() {
     this.controls = {};
     this.controls.enterView = this.chat.element.find('.chat-enter-view');
     this.controls.nicknameInput = this.chat.element.find('.chat-nickname-input');
-    this.controls.colorInput = this.chat.element.find('.chat-color-input');
-    this.controls.loginButton = this.chat.element.find('.chat-login-button');
+    this.controls.colorInput = $(this.chat.element.find('.chat-color-input')).spectrum({
+        preferredFormat: "name",
+        change: function(color) {
+            $(me.chat.element.find('.chat-color-input')).val(color.toHex());
+        }
+    });
+    this.controls.enterButton = this.chat.element.find('.chat-enter-button');
     this.controls.mainView = this.chat.element.find('.chat-main-view');
     this.controls.messageInput = this.chat.element.find('.chat-message-input');
     this.controls.messagesOutput = this.chat.element.find('.chat-messages-output');
     this.controls.usersOutput = this.chat.element.find('.chat-users-output');
 
-    this.controls.loginButton.bind(
+    this.controls.enterButton.bind(
         'click',
         function(aEvent) {
             me.chat.user.nickname = me.controls.nicknameInput.val();
@@ -111,11 +116,18 @@ Chat.View.prototype.clearMessageInput = function() {
 
 
 Chat.View.prototype.updateMessagesView = function() {
+
+    var isBottom = this.controls.messagesOutput[0].scrollHeight == this.controls.messagesOutput[0].offsetHeight + this.controls.messagesOutput.scrollTop()
+
     var newMessages = this.chat.model.getNewMessages();
     for (var i = 0; i < newMessages.length; i++) {
         this.printMessage(this.parseOutputMessage(newMessages[i]));
     }
-//    this.controls.messagesOutput.scrollTop(this.controls.messagesOutput[0].scrollHeight);
+
+    if (isBottom) {
+        this.controls.messagesOutput.scrollTop(this.controls.messagesOutput[0].scrollHeight - this.controls.messagesOutput[0].offsetHeight);
+    }
+
 }
 
 Chat.View.prototype.printMessage = function(message) {
@@ -238,12 +250,18 @@ Chat.View.prototype.parseOutputMessageText = function(text) {
 }
 
 Chat.View.prototype.updateUsersView = function() {
+
+    var scrollTop = this.controls.usersOutput.scrollTop();
+
     this.clearUsersOutput();
+
     var users = this.chat.model.getUsers();
     for (var i = 0; i < users.length; i++) {
         this.printUser(this.colorizeUser(users[i]));
     }
-//    this.controls.usersOutput.scrollTop(this.controls.usersOutput[0].scrollHeight);
+
+    this.controls.usersOutput.scrollTop(scrollTop);
+
 }
 
 Chat.View.prototype.printUser = function(user) {
@@ -265,7 +283,7 @@ Chat.View.prototype.colorizeUser = function(user) {
             style += 'color:' + user.color + ';';
         }
 
-        if (!user.logged) {
+        if (user.userId == -1) {
             style += 'font-style:italic;';
         }
 

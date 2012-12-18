@@ -5,19 +5,27 @@ import org.mulis.chat.api.model.ChatModel;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 @Service
 public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPostedMessage> {
 
     private final static Logger logger = Logger.getLogger(SimpleChatModel.class);
 
-    private final static long userAccessTimeout = 300000;
+    private final class UserNicknameComparator implements Comparator<ChatUser> {
+        @Override
+        public int compare(ChatUser user1, ChatUser user2) {
+            return user1.getNickname().compareTo(user2.getNickname());
+        }
+    };
 
-    private final ConcurrentSkipListMap<Integer, ChatUser> users = new ConcurrentSkipListMap<Integer, ChatUser>();
-    private final ConcurrentSkipListMap<String, Integer> userIds = new ConcurrentSkipListMap<String, Integer>();
+    private final ConcurrentSkipListSet<ChatUser> users = new ConcurrentSkipListSet<ChatUser>(new UserNicknameComparator());
+    private final ConcurrentSkipListMap<String, ChatUser> nicknameUserMap = new ConcurrentSkipListMap<String, ChatUser>();
+    private final ConcurrentSkipListMap<Integer, ChatUser> userIdUserMap = new ConcurrentSkipListMap<Integer, ChatUser>();
     private Integer lastUserId = -1;
 
     private final ConcurrentSkipListMap<Integer, ChatPostedMessage> postedMessages = new ConcurrentSkipListMap<Integer, ChatPostedMessage>();
@@ -28,26 +36,17 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
 
         Integer userId;
 
-        if (userIds.containsKey(nickname)) {
+        if (nicknameUserMap.containsKey(nickname)) {
 
-            userId = getUserId(nickname);
+            ChatUser user = getUser(nickname);
+            user.setColor(color);
 
-            ChatUser user = getUser(userId);
+            userId = user.getId();
 
-            if (isLoggedIn(user)) {
-                userId = -1;
-            } else {
-                user.setColor(color);
-            }
 
         } else {
 
-            ChatUser user = new ChatUser();
-            user.setNickname(nickname);
-            user.setColor(color);
-            user.setLastMessageId(lastPostedMessageId);
-
-            userId = addUser(user);
+            userId = createUser(nickname, color);
 
         }
 
@@ -55,31 +54,44 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
 
     }
 
-    private Integer getUserId(String nickname) {
-        return userIds.get(nickname);
-    }
-
     private ChatUser getUser(Integer userId) {
-        return users.get(userId);
+        return userIdUserMap.get(userId);
     }
 
-    synchronized private Integer addUser(ChatUser user) {
+    private ChatUser getUser(String nickname) {
+        return nicknameUserMap.get(nickname);
+    }
+
+    synchronized private Integer createUser(String nickname, String color) {
 
         Integer userId = ++lastUserId;
 
-        userIds.put(user.getNickname(), userId);
-        users.put(userId, user);
+        ChatUser user = new ChatUser();
+
+        user.setNickname(nickname);
+        user.setColor(color);
+        user.setLastReceivedMessageId(lastPostedMessageId);
+        user.setId(userId);
+
+        users.add(user);
+        nicknameUserMap.put(user.getNickname(), user);
+        userIdUserMap.put(user.getId(), user);
 
         return userId;
 
     }
 
     public void logout(Integer userId) {
-    }
 
-    private boolean isLoggedIn(ChatUser user) {
+        if (userIdUserMap.containsKey(userId)) {
 
-        return new Date().getTime() - user.getLastAccess().getTime() < userAccessTimeout;
+            ChatUser user = getUser(userId);
+
+            userIdUserMap.remove(userId);
+            nicknameUserMap.remove(user.getNickname());
+            users.remove(user);
+
+        }
 
     }
 
@@ -87,6 +99,7 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
     public String changeNickname(Integer userId, String newNickname) {
 
         ChatUser user = getUser(userId);
+
         String oldNickname = user.getNickname();
 
         user.setNickname(newNickname);
@@ -99,6 +112,7 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
     public String changeColor(Integer userId, String newColor) {
 
         ChatUser user = getUser(userId);
+
         String oldColor = user.getColor();
 
         user.setColor(newColor);
@@ -109,7 +123,7 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
 
     @Override
     public Collection<ChatUser> getUsers() {
-        return users.values();
+        return users;
     }
 
     @Override
@@ -133,14 +147,17 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
     }
 
     @Override
-    public Collection<ChatPostedMessage> getMessages(Integer userId) {
+    public Collection<ChatPostedMessage> getMessages(Integer userId, Integer lastReceivedMessageId) {
 
         ChatUser user = getUser(userId);
-        user.setLastAccess(new Date());
 
-        Collection<ChatPostedMessage> userPostedMessages = postedMessages.tailMap(user.getLastMessageId(), false).values();
+        if (lastReceivedMessageId < 0) {
+            lastReceivedMessageId = user.getLastReceivedMessageId();
+        }
 
-        user.setLastMessageId(user.getLastMessageId() + userPostedMessages.size());
+        Collection<ChatPostedMessage> userPostedMessages = postedMessages.tailMap(lastReceivedMessageId, false).values();
+
+        user.setLastReceivedMessageId(user.getLastReceivedMessageId() + userPostedMessages.size());
 
         Iterator<ChatPostedMessage> iterator = userPostedMessages.iterator();
         ChatPostedMessage postedMessage;

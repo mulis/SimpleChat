@@ -16,6 +16,6 @@ public interface ChatModel<ChatUser, ChatMessage, ChatPostedMessage> {
 
     public Integer postMessage(ChatMessage message);
 
-    public Collection<ChatPostedMessage> getMessages(Integer userId);
+    public Collection<ChatPostedMessage> getMessages(Integer userId, Integer lastReceivedMessageId);
 
 }

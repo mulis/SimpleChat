@@ -1,13 +1,11 @@
 package org.mulis.simplechat.model;
 
-import java.util.Date;
-
 public class ChatUser {
 
     private String nickname;
     private String color;
-    private Integer lastMessageId;
-    private Date lastAccess;
+    private Integer lastReceivedMessageId;
+    private Integer id;
 
     public String getNickname() {
         return nickname;
@@ -25,20 +23,20 @@ public class ChatUser {
         this.color = color;
     }
 
-    public Integer getLastMessageId() {
-        return lastMessageId;
+    Integer getLastReceivedMessageId() {
+        return lastReceivedMessageId;
     }
 
-    public void setLastMessageId(Integer lastMessageId) {
-        this.lastMessageId = lastMessageId;
+    void setLastReceivedMessageId(Integer lastMessageId) {
+        this.lastReceivedMessageId = lastMessageId;
     }
 
-    public Date getLastAccess() {
-        return lastAccess;
+    Integer getId() {
+        return id;
     }
 
-    public void setLastAccess(Date lastAccess) {
-        this.lastAccess = lastAccess;
+    void setId(Integer id) {
+        this.id = id;
     }
 
 }
