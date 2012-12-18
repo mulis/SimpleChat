@@ -6,6 +6,8 @@ public interface ChatModel<ChatUser, ChatMessage, ChatPostedMessage> {
 
     public Integer login(String nickname, String color);
 
+    public void logout(Integer userId);
+
     public String changeNickname(Integer userId, String newNickname);
 
     public String changeColor(Integer userId, String newColor);

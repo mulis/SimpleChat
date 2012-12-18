@@ -14,6 +14,8 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
 
     private final static Logger logger = Logger.getLogger(SimpleChatModel.class);
 
+    private final static long userAccessTimeout = 300000;
+
     private final ConcurrentSkipListMap<Integer, ChatUser> users = new ConcurrentSkipListMap<Integer, ChatUser>();
     private final ConcurrentSkipListMap<String, Integer> userIds = new ConcurrentSkipListMap<String, Integer>();
     private Integer lastUserId = -1;
@@ -31,7 +33,12 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
             userId = getUserId(nickname);
 
             ChatUser user = getUser(userId);
-            user.setColor(color);
+
+            if (isLoggedIn(user)) {
+                userId = -1;
+            } else {
+                user.setColor(color);
+            }
 
         } else {
 
@@ -45,6 +52,7 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
         }
 
         return userId;
+
     }
 
     private Integer getUserId(String nickname) {
@@ -63,6 +71,15 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
         users.put(userId, user);
 
         return userId;
+
+    }
+
+    public void logout(Integer userId) {
+    }
+
+    private boolean isLoggedIn(ChatUser user) {
+
+        return new Date().getTime() - user.getLastAccess().getTime() < userAccessTimeout;
 
     }
 
@@ -102,11 +119,7 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
 
     synchronized private Integer addMessage(ChatMessage message) {
 
-        logger.debug("synchronized private Integer addMessage(ChatMessage message)");
-        logger.debug("message: " + message);
-
         Integer messageId = ++lastPostedMessageId;
-        logger.debug("lastPostedMessageId: " + lastPostedMessageId);
 
         ChatPostedMessage postedMessage = new ChatPostedMessage();
         postedMessage.setMessageId(messageId);
@@ -114,8 +127,6 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
         postedMessage.setMessage(message);
 
         postedMessages.put(messageId, postedMessage);
-
-        logger.debug("postedMessage: " + postedMessage);
 
         return messageId;
 
@@ -125,6 +136,7 @@ public class SimpleChatModel implements ChatModel<ChatUser, ChatMessage, ChatPos
     public Collection<ChatPostedMessage> getMessages(Integer userId) {
 
         ChatUser user = getUser(userId);
+        user.setLastAccess(new Date());
 
         Collection<ChatPostedMessage> userPostedMessages = postedMessages.tailMap(user.getLastMessageId(), false).values();
 

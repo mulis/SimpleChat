@@ -20,17 +20,6 @@ public class SimpleChatChatController implements ChatController<PostMessageReque
     @Inject
     private SimpleChatModel model;
 
-    @RequestMapping(value = "/test", method = RequestMethod.GET, produces = "text/plain")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public String test(@RequestParam final String nickname, @RequestParam final String color) {
-
-        //Integer userId = model.login(nickname, color);
-
-        return "Ok";
-
-    }
-
     @RequestMapping(value = "/login", method = RequestMethod.GET, produces = "text/plain")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -49,6 +38,7 @@ public class SimpleChatChatController implements ChatController<PostMessageReque
     @Override
     public void logout(@RequestParam final Integer userId) {
 
+        model.logout(userId);
 
     }
 
@@ -58,12 +48,7 @@ public class SimpleChatChatController implements ChatController<PostMessageReque
     @Override
     public Integer postMessage(@RequestBody final PostMessageRequestBody request) {
 
-        logger.debug("public Integer postMessage(PostMessageRequestBody request)");
-        logger.debug("request: " + request);
-
         Integer messageId = model.postMessage(request.getMessage());
-
-        logger.debug("messageId: " + messageId);
 
         return messageId;
 
