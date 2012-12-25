@@ -4,6 +4,7 @@ Chat = function(elementId, serviceUrl) {
     this.serviceUrl = serviceUrl;
     this.events = {
         VIEW_TEMPLATE_LOAD : "view-template-load",
+        VIEW_CONTROLS_INIT : "view-controls-init",
         INPUT_READY : "input-ready",
         LOGIN_ATTEMPT : "login-attempt",
         LOGIN_SUCCESS : "login-success",

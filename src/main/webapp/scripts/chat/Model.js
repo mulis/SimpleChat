@@ -11,6 +11,14 @@ Chat.Model = function(chat) {
 
 }
 
+Chat.Model.prototype.setMessages = function(messages) {
+    this.messages = messages;
+}
+
+Chat.Model.prototype.getMessages = function() {
+    return this.messages;
+}
+
 Chat.Model.prototype.addNewMessages = function(messages) {
     if (messages) {
         for (var i = 0; i < messages.length; i++) {

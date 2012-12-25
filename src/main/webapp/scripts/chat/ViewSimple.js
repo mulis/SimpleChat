@@ -74,7 +74,7 @@ Chat.View.prototype.initControls = function() {
     });
     this.controls.enterButton = this.chat.element.find('.chat-enter-button');
     this.controls.mainView = this.chat.element.find('.chat-main-view');
-    this.controls.messageInput = this.chat.element.find('.chat-message-input');
+    this.controls.messageInput = new DivEditor(this.chat.element.find('.chat-message-input')).getInputElement();
     this.controls.messagesOutput = this.chat.element.find('.chat-messages-output');
     this.controls.usersOutput = this.chat.element.find('.chat-users-output');
 
@@ -92,11 +92,13 @@ Chat.View.prototype.initControls = function() {
         function(aEvent) {
             var keycode = (aEvent.keyCode ? aEvent.keyCode : aEvent.which);
             if(keycode == '13'){
-                me.parseMessageInput(me.controls.messageInput.val());
+                me.parseMessageInput(me.htmlToText(me.controls.messageInput.html()));
                 aEvent.preventDefault();
             }
         }
     );
+
+    this.chat.element.trigger(this.chat.events.VIEW_CONTROLS_INIT);
 
 }
 
@@ -113,7 +115,6 @@ Chat.View.prototype.hideMainView = function() {
 Chat.View.prototype.clearMessageInput = function() {
     this.controls.messageInput.val('');
 }
-
 
 Chat.View.prototype.updateMessagesView = function() {
 
@@ -135,6 +136,7 @@ Chat.View.prototype.printMessage = function(message) {
 }
 
 Chat.View.prototype.clearMessagesOutput = function() {
+    this.chat.model.setMessages([]);
     this.controls.messagesOutput.text('');
 }
 
@@ -224,12 +226,12 @@ Chat.View.prototype.parseOutputMessage = function(envelope) {
                 output += ' @' + this.colorizeUser(users[1]);
             }
             else {
-                output += ' ' + envelope.message.receiverNickname;
+                output += ' @' + envelope.message.receiverNickname;
             }
         }
 
         if (envelope.message.text) {
-            output += '. ' + this.parseOutputMessageText(envelope.message.text);
+            output += '. ' + this.textToHtml(envelope.message.text);
         }
 
     }
@@ -238,12 +240,44 @@ Chat.View.prototype.parseOutputMessage = function(envelope) {
 
 }
 
-Chat.View.prototype.parseOutputMessageText = function(text) {
+Chat.View.prototype.htmlToText = function(message) {
 
+    //message = message.replace(/\&/g, '&amp;');
+    message = message.replace(/\*/g, '&#42;');
+    message = message.replace(/\//g, '&#47;');
+    message = message.replace(/\_/g, '&#95;');
+    message = message.replace(/\-/g, '&#45;');
+    message = message.replace(/\[/g, '&#91;');
+    message = message.replace(/\]/g, '&#93;');
+    message = message.replace(/\|/g, '&#166;');
+    message = message.replace(/\(/g, '&#40;');
+    message = message.replace(/\(/g, '&#41;');
+
+    message = message.replace(/<i[^>]*>([^<]*)<&#47;i>/g, '*$1*');
+    message = message.replace(/<b[^>]*>([^<]*)<&#47;b>/g, '*$1*');
+    message = message.replace(/<u[^>]*>([^<]*)<&#47;u>/g, '*$1*');
+    message = message.replace(/<s[^>]*>([^<]*)<&#47;s>/g, '*$1*')
+    message = message.replace(/<a href="([^"]*)">([^<]*)<&#47;a>/g, '[$2|$1]');
+    message = message.replace(/<img src="([^"]*)">/g, '($1)');
+
+    //message = message.replace(/</g, '&lt;');
+    //message = message.replace(/>/g, '&gt;');
+
+    return message;
+
+}
+
+Chat.View.prototype.textToHtml = function(text) {
+
+    text = text.replace(/\</g, '&lt;');
+    text = text.replace(/\>/g, '&gt;');
+
+    text = text.replace(/\/([^\/]+)\//g, '<i>$1</i>');
     text = text.replace(/\*([^\*]+)\*/g, '<b>$1</b>');
     text = text.replace(/\_([^\_]+)\_/g, '<u>$1</u>');
     text = text.replace(/\-([^\-]+)\-/g, '<s>$1</s>');
     text = text.replace(/\[([^\|].+)\|(.+)\]/g, '<a href="$2">$1</a>');
+    text = text.replace(/\((.+)\)/g, '<img src="$1" />');
 
     return text;
 
@@ -288,15 +322,17 @@ Chat.View.prototype.colorizeUser = function(user) {
         }
 
         if (user.nickname) {
+
+            if (user.nickname == this.chat.user.nickname) {
+                style += 'font-weight:bold;';
+            }
+
             output += '<span style="'+ style + '">' + user.nickname + '</span>';
+
         }
 
     }
 
     return output;
 
-}
-
-Chat.View.prototype.printStatus = function(status) {
-    this.controls.statusOutput.html('<div>' + status + '</div>');
 }

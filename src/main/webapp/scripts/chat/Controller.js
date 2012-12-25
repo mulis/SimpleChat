@@ -14,11 +14,18 @@ Chat.Controller = function(chat) {
     );
 
     $(this.chat.element).bind(
+        chat.events.VIEW_CONTROLS_INIT,
+        function() {
+            me.restoreUser();
+        }
+    );
+
+    $(this.chat.element).bind(
         chat.events.LOGIN_ATTEMPT,
         function() {
             me.login();
         }
-    )
+    );
 
     $(this.chat.element).bind(
         chat.events.LOGIN_SUCCESS,
@@ -26,14 +33,14 @@ Chat.Controller = function(chat) {
             me.chat.usersTimer.start();
             me.chat.messagesTimer.start();
         }
-    )
+    );
 
     $(this.chat.element).bind(
         chat.events.LOGOUT_ATTEMPT,
         function() {
             me.logout();
         }
-    )
+    );
 
     $(this.chat.element).bind(
         chat.events.LOGOUT_SUCCESS,
@@ -41,28 +48,28 @@ Chat.Controller = function(chat) {
             me.chat.messagesTimer.stop();
             me.chat.usersTimer.stop();
         }
-    )
+    );
 
     $(this.chat.element).bind(
         chat.events.POST_MESSAGE_ATTEMPT,
         function(event, message) {
             me.postMessage(message);
         }
-    )
+    );
 
     $(this.chat.element).bind(
         chat.events.GET_MESSAGES_ATTEMPT,
         function(event, message) {
             me.getMessages();
         }
-    )
+    );
 
     $(this.chat.element).bind(
         chat.events.GET_USERS_ATTEMPT,
         function(event, message) {
             me.getUsers();
         }
-    )
+    );
 
 }
 
@@ -81,6 +88,7 @@ Chat.Controller.prototype.login = function() {
         var userId = parseInt(data);
         if (userId >= 0) {
             me.chat.user.userId = userId;
+            me.storeUser();
             me.chat.element.trigger(me.chat.events.LOGIN_SUCCESS);
         }
         else {
@@ -229,3 +237,21 @@ Chat.Controller.prototype.getUsers = function(user) {
 
 }
 
+Chat.Controller.prototype.restoreUser = function() {
+
+    var cookieArr = document.cookie.match(new RegExp('chat\.' + this.chat.element[0].id + '={[^}]*}'));
+
+    if (cookieArr && cookieArr != '') {
+
+        this.chat.user = JSON.parse(cookieArr[0].split('=')[1]);
+        this.chat.element.trigger(this.chat.events.LOGIN_ATTEMPT);
+
+    }
+
+}
+
+Chat.Controller.prototype.storeUser = function() {
+
+    document.cookie = 'chat.' + this.chat.element[0].id + '=' + JSON.stringify(this.chat.user);
+
+}
