@@ -1,0 +1,126 @@
+.divEditor-panel-main {
+  position:absolute;
+  top:0px;
+  height:auto;
+  bottom:0px;
+  left:0px;
+  width:auto;
+  right:0px;
+  background-color:#dde;
+}
+
+.divEditor-panel-main button, .divEditor-panel-main span {
+  height:24px;
+  width:24px;
+  color:transparent;
+  background-color:#ddd;
+  background-repeat:no-repeat;
+  background-position:center center;
+}
+
+.divEditor-panel-main {
+}
+
+.divEditor-panel-buttons {
+  position:absolute;
+  top:0px;
+  height:32px;
+  bottom:auto;
+  left:0px;
+  width:auto;
+  right:0px;
+  margin:0px;
+  border:0px;
+  padding:4px;
+}
+
+.divEditor-panel-styles {
+  display:inline;
+}
+
+.divEditor-panel-emoticons {
+  display:inline;
+}
+
+.divEditor-panel-edit {
+  position:absolute;
+  top:32px;
+  height:auto;
+  bottom:0px;
+  left:0px;
+  width:auto;
+  right:0px;
+  margin:0px;
+  border:0px;
+  padding:4px;
+  overflow:hidden;
+  overflow-y:scroll;
+  background-color:#eef;
+}
+
+.divEditor-flyPanel-linkEdit {
+  position:absolute;
+  top:20%;
+  height:60%;
+  bottom:20%;
+  left:10%;
+  width:80%;
+  right:10%;
+  overflow:hidden;
+  overflow-y:visible;
+  background-color:#ddd;
+}
+
+.divEditor-panel-edit .divEditor-textEdit, .divEditor-flyPanel-linkEdit .divEditor-textEdit {
+  position:absolute;
+  top:0px;
+  height:auto;
+  bottom:0px;
+  left:0px;
+  width:auto;
+  right:0px;
+}
+
+.divEditor-button-bold {
+  background-image:url(image/text_bold.png);
+}
+
+.divEditor-button-italic {
+  background-image:url(image/text_italic.png);
+}
+
+.divEditor-button-underline {
+  background-image:url(image/text_underline.png);
+}
+
+.divEditor-button-strikethrough {
+  background-image:url(image/text_strikethrough.png);
+}
+
+.divEditor-button-anchor {
+  background-image:url(image/link.png);
+}
+
+.divEditor-button-emoticon-happy, .divEditor-emoticon-happy {
+  background-image:url(image/emoticon_happy.png);
+}
+
+.divEditor-button-emoticon-smile {
+  background-image:url(image/emoticon_smile.png);
+}
+
+.divEditor-button-emoticon-surprised {
+  background-image:url(image/emoticon_surprised.png);
+}
+
+.divEditor-button-emoticon-tongue {
+  background-image:url(image/emoticon_tongue.png);
+}
+
+.divEditor-button-emoticon-unhappy {
+  background-image:url(image/emoticon_unhappy.png);
+}
+
+.divEditor-button-emoticon-wink {
+  background-image:url(image/emoticon_wink.png);
+}
