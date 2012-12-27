@@ -1,8 +1,5 @@
 package org.mulis.simplechat.model;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-
 public class ChatMessage {
 
     private String senderNickname;
