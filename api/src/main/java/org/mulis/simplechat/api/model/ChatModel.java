@@ -1,4 +1,4 @@
-package org.mulis.chat.api.model;
+package org.mulis.simplechat.api.model;
 
 import java.util.Collection;
 
