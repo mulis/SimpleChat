@@ -1,2 +1,0 @@
-DivEditor.UI = function() {
-}
