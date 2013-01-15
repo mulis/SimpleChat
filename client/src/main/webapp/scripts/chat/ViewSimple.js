@@ -254,12 +254,12 @@ Chat.View.prototype.htmlToText = function(message) {
     message = message.replace(/\(/g, '&#40;');
     message = message.replace(/\(/g, '&#41;');
 
-    message = message.replace(/<i[^>]*>([^<]*)<&#47;i>/g, '/$1/');
-    message = message.replace(/<b[^>]*>([^<]*)<&#47;b>/g, '*$1*');
-    message = message.replace(/<u[^>]*>([^<]*)<&#47;u>/g, '_$1_');
-    message = message.replace(/<s[^>]*>([^<]*)<&#47;s>/g, '-$1-');
-    message = message.replace(/<a href="([^"]*)"[^>]*>([^<]*)<&#47;a>/g, '[$2|$1]');
-    message = message.replace(/<img src="([^"]*)">/g, '($1)');
+    message = message.replace(/<i[^>]*>(.*?)<&#47;i>/g, '/$1/');
+    message = message.replace(/<b[^>]*>(.*?)<&#47;b>/g, '*$1*');
+    message = message.replace(/<u[^>]*>(.*?)<&#47;u>/g, '_$1_');
+    message = message.replace(/<s[^>]*>(.*?)<&#47;s>/g, '-$1-');
+    message = message.replace(/<a href="([^"]*?)"[^>]*>(.*?)<&#47;a>/g, '[$2|$1]');
+    message = message.replace(/<img src="([^"]*?)">/g, '($1)');
 
     //message = message.replace(/</g, '&lt;');
     //message = message.replace(/>/g, '&gt;');

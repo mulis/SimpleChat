@@ -16,9 +16,9 @@ DivEditor.UI.TextEdit.prototype.make = function() {
   DivEditor.UI.Component.prototype.make.apply(this);
   
   if (this.element) {
-    
+
     this.element.attr('contenteditable', 'true');
-    
+
   }
   
 }

@@ -114,6 +114,18 @@ DivEditor = function(element) {
 
   editPanel.addComponent(me.input);
   
+  me.input.element.on(
+    'keyup',
+    function(aEvent) {
+      if (aEvent.keyCode == 8 || aEvent.keyCode == 46) {
+        if (me.input.element.text() == '') {
+          me.input.element.children('br').remove();
+          //me.input.element.contents().filter(function(){return this.nodeType == 3;}).remove();
+        }
+      }
+    }
+  );
+
   var linkEditFlyPanel = new DivEditor.UI.FlyPanel({
     parentElement : editPanel.element,
     className : 'divEditor-flyPanel-linkEdit'
@@ -125,24 +137,35 @@ DivEditor = function(element) {
   });
   
   linkEditFlyPanel.addComponent(linkEdit);
-  
+
+  editPanel.element.on(
+    'mouseover',
+    function(aEvent) {
+      if ($(aEvent.fromElement).parents().hasClass(linkEditFlyPanel.className)) {
+        linkEditFlyPanel.element.hide();
+      }
+    }
+  );
+
   editPanel.element.on(
     'mouseover',
     '.divEditor-anchor',
     function(aEvent) {
       if (aEvent.which != 1) {
         var anchor = aEvent.target;
+        $(anchor).addClass('.divEditor-anchor-selected');
         linkEditFlyPanel.element.show();
         linkEdit.element.focus();
         linkEdit.putProperties({text : anchor.href});
         linkEdit.refresh();
-        linkEdit.element.on(
-          'mouseout',
-          function(aEvent) {
-            anchor.href = linkEdit.element.text();
-            linkEdit.element.off('mouseout');
-          }
-        );
+//        linkEdit.element.on(
+//          'mouseout',
+//          function(aEvent) {
+//            anchor.href = linkEdit.element.text();
+//            linkEdit.element.off('mouseout');
+//          }
+//        );
+        aEvent.stopPropagation();
       }
     }
   );
@@ -151,9 +174,9 @@ DivEditor = function(element) {
     'mouseout',
     '.divEditor-anchor',
     function(aEvent) {
+      //$(aEvent.target).attr('href', linkEdit.element.text());
       if ($(aEvent.toElement).closest('.' + linkEditFlyPanel.className).length < 0) {
-        $(aEvent.target).attr('href', linkEdit.element.text());
-        linkEditFlyPanel.element.hide();
+        //linkEditFlyPanel.element.hide();
       }
     }
   );
@@ -167,13 +190,13 @@ DivEditor = function(element) {
   linkEditFlyPanel.element.on(
     'mouseout',
     function(aEvent) {
-      linkEditFlyPanel.element.hide();
+      //linkEditFlyPanel.element.hide();
     }
   );
   
 }
 
-DivEditor.prototype.applyStyle = function(appllier) {
+DivEditor.prototype.applyStyle = function(applier) {
   
   var selection = rangy.getSelection();
   
@@ -185,7 +208,7 @@ DivEditor.prototype.applyStyle = function(appllier) {
       
       if ($(range.commonAncestorContainer).closest(this.input.element).length > 0) {
       
-        appllier.toggleSelection();
+        applier.toggleSelection();
       
       }
       

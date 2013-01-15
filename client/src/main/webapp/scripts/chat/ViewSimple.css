@@ -64,6 +64,7 @@
     right: 202px;
     overflow: hidden;
     overflow-y: scroll;
+    word-wrap: break-word;
 }
 .chat-users-output {
     position: absolute;

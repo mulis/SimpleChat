@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<uberwar>
+    <merges>
+        <merge>
+            <type>web.xml</type>
+            <parameters>
+                <default>
+                    <tag name="display-name">
+                        <strategy name="NodeMerge">
+                            <display-name>Simple Chat Web Application</display-name>
+                        </strategy>
+                    </tag>
+                </default>
+            </parameters>
+        </merge>
+    </merges>
+    <wars>
+        <war>org.mulis.simplechat:simplechat-server</war>
+        <war>org.mulis.simplechat:simplechat-client</war>
+    </wars>
+</uberwar>

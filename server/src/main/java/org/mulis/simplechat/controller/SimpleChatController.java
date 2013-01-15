@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import java.util.Collection;
 
-//import org.mulis.simplechat.api.controller.*;
-
 @Controller
 public class SimpleChatController implements ChatController<PostMessageRequestBody> {
 
