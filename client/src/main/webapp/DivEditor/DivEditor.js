@@ -126,6 +126,13 @@ DivEditor = function(element) {
     }
   );
 
+  me.input.element.on(
+    'paste',
+    function(aEvent) {
+      setTimeout(function() {me.input.element.find('span').contents().unwrap()}, 0);
+    }
+  );
+
   var linkEditFlyPanel = new DivEditor.UI.FlyPanel({
     parentElement : editPanel.element,
     className : 'divEditor-flyPanel-linkEdit'
@@ -140,32 +147,15 @@ DivEditor = function(element) {
 
   editPanel.element.on(
     'mouseover',
-    function(aEvent) {
-      if ($(aEvent.fromElement).parents().hasClass(linkEditFlyPanel.className)) {
-        linkEditFlyPanel.element.hide();
-      }
-    }
-  );
-
-  editPanel.element.on(
-    'mouseover',
     '.divEditor-anchor',
     function(aEvent) {
       if (aEvent.which != 1) {
         var anchor = aEvent.target;
-        $(anchor).addClass('.divEditor-anchor-selected');
+        $(anchor).addClass('divEditor-anchor-selected');
         linkEditFlyPanel.element.show();
         linkEdit.element.focus();
         linkEdit.putProperties({text : anchor.href});
         linkEdit.refresh();
-//        linkEdit.element.on(
-//          'mouseout',
-//          function(aEvent) {
-//            anchor.href = linkEdit.element.text();
-//            linkEdit.element.off('mouseout');
-//          }
-//        );
-        aEvent.stopPropagation();
       }
     }
   );
@@ -174,23 +164,24 @@ DivEditor = function(element) {
     'mouseout',
     '.divEditor-anchor',
     function(aEvent) {
-      //$(aEvent.target).attr('href', linkEdit.element.text());
-      if ($(aEvent.toElement).closest('.' + linkEditFlyPanel.className).length < 0) {
-        //linkEditFlyPanel.element.hide();
+      if (aEvent.which != 1) {
+        if (!$(aEvent.toElement).parents().hasClass(linkEditFlyPanel.className)) {
+          var anchor = aEvent.target;
+          $(anchor).removeClass('divEditor-anchor-selected');
+          anchor.href = linkEdit.element.text();
+          linkEditFlyPanel.element.hide();
+        }
       }
-    }
-  );
-  
-  linkEditFlyPanel.element.on(
-    'mouseover',
-    function(aEvent) {
     }
   );
   
   linkEditFlyPanel.element.on(
     'mouseout',
     function(aEvent) {
-      //linkEditFlyPanel.element.hide();
+      var anchor = editPanel.element.find('.divEditor-anchor-selected')[0];
+      $(anchor).removeClass('divEditor-anchor-selected');
+      anchor.href = linkEdit.element.text();
+      linkEditFlyPanel.element.hide();
     }
   );
   
